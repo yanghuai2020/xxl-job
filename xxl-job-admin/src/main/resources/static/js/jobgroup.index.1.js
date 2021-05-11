@@ -76,6 +76,7 @@ $(function() {
 							'     <ul class="dropdown-menu" role="menu" _id="'+ row.id +'" >\n' +
 							'       <li><a href="javascript:void(0);" class="opt_edit" >'+ I18n.system_opt_edit +'</a></li>\n' +
 							'       <li><a href="javascript:void(0);" class="opt_del" >'+ I18n.system_opt_del +'</a></li>\n' +
+							'       <li><a href="javascript:void(0);" class="opt_addUserPin" >'+ I18n.system_opt_addUser +'</a></li>\n' +
 							'     </ul>\n' +
 							'   </div>';
 
@@ -179,6 +180,47 @@ $(function() {
 			});
 		});
 	});
+
+
+    // opt_del
+    $("#jobgroup_list").on('click', '.opt_addUserPin',function() {
+        var id = $(this).parents('ul').attr("_id");
+
+        layer.confirm( (I18n.system_ok + I18n.jobgroup_del + '？') , {
+            icon: 3,
+            title: I18n.system_tips+"ddd" ,
+            btn: [ I18n.system_ok, I18n.system_cancel ]
+        }, function(index){
+            layer.close(index);
+
+            $.ajax({
+                type : 'POST',
+                url : base_url + '/user/add',
+                data : {"id":id},
+                dataType : "json",
+                success : function(data){
+                    if (data.code == 200) {
+                        layer.open({
+                            title: I18n.system_tips ,
+                            btn: [ I18n.system_ok ],
+                            content: (I18n.jobgroup_del + I18n.system_success),
+                            icon: '1',
+                            end: function(layero, index){
+                                jobGroupTable.fnDraw();
+                            }
+                        });
+                    } else {
+                        layer.open({
+                            title: I18n.system_tips,
+                            btn: [ I18n.system_ok ],
+                            content: (data.msg || (I18n.jobgroup_del + I18n.system_fail)),
+                            icon: '2'
+                        });
+                    }
+                },
+            });
+        });
+    });
 
 
 	// jquery.validate “low letters start, limit contants、 letters、numbers and line-through.”

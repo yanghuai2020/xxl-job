@@ -1,5 +1,7 @@
 package com.xxl.job.admin.controller;
 
+import com.jd.common.web.LoginContext;
+import com.xxl.job.admin.constants.StaticDataInfo;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobRegistry;
 import com.xxl.job.admin.core.util.I18nUtil;
@@ -46,9 +48,15 @@ public class JobGroupController {
 										String appname, String title) {
 
 		// page query
-		List<XxlJobGroup> list = xxlJobGroupDao.pageList(start, length, appname, title);
-		int list_count = xxlJobGroupDao.pageListCount(start, length, appname, title);
-
+        List<XxlJobGroup> list = null;
+        int list_count = 0;
+        if (StaticDataInfo.ADMIN_PIN.equalsIgnoreCase(LoginContext.getLoginContext().getPin())) {
+            list = xxlJobGroupDao.pageListAll(start, length, appname, title);
+            list_count = xxlJobGroupDao.pageListCountAll(start, length, appname, title);
+        } else {
+            list = xxlJobGroupDao.pageList(start, length, appname, title, LoginContext.getLoginContext().getPin());
+            list_count = xxlJobGroupDao.pageListCount(start, length, appname, title, LoginContext.getLoginContext().getPin());
+        }
 		// package result
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("recordsTotal", list_count);		// 总记录数
@@ -178,7 +186,14 @@ public class JobGroupController {
 			return new ReturnT<String>(500, I18nUtil.getString("jobgroup_del_limit_0") );
 		}
 
-		List<XxlJobGroup> allList = xxlJobGroupDao.findAll();
+        List<XxlJobGroup> allList = null;
+        if (StaticDataInfo.ADMIN_PIN.equalsIgnoreCase(LoginContext.getLoginContext().getPin())) {
+            allList = xxlJobGroupDao.findAllJobGroup();
+        } else {
+            allList = xxlJobGroupDao.findAll(LoginContext.getLoginContext().getPin());
+        }
+
+
 		if (allList.size() == 1) {
 			return new ReturnT<String>(500, I18nUtil.getString("jobgroup_del_limit_1") );
 		}

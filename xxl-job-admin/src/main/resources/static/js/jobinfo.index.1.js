@@ -5,11 +5,16 @@ $(function() {
 		"deferRender": true,
 		"processing" : true,
 	    "serverSide": true,
+         "retrieve": true,
 		"ajax": {
 			url: base_url + "/jobinfo/pageList",
 			type:"post",
 	        data : function ( d ) {
+
 	        	var obj = {};
+
+	        	d.Id = $.trim($("#id").val())
+
 	        	obj.jobGroup = $('#jobGroup').val();
                 obj.triggerStatus = $('#triggerStatus').val();
                 obj.jobDesc = $('#jobDesc').val();

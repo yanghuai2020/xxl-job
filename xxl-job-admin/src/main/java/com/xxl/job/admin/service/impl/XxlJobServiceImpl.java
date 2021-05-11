@@ -1,5 +1,7 @@
 package com.xxl.job.admin.service.impl;
 
+import com.jd.common.web.LoginContext;
+import com.xxl.job.admin.constants.StaticDataInfo;
 import com.xxl.job.admin.core.cron.CronExpression;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobInfo;
@@ -359,7 +361,12 @@ public class XxlJobServiceImpl implements XxlJobService {
 
 		// executor count
 		Set<String> executorAddressSet = new HashSet<String>();
-		List<XxlJobGroup> groupList = xxlJobGroupDao.findAll();
+		List<XxlJobGroup> groupList = null;
+        if (StaticDataInfo.ADMIN_PIN.equalsIgnoreCase(LoginContext.getLoginContext().getPin())) {
+            groupList = xxlJobGroupDao.findAllJobGroup();
+        } else {
+            groupList = xxlJobGroupDao.findAll(LoginContext.getLoginContext().getPin());
+        }
 
 		if (groupList!=null && !groupList.isEmpty()) {
 			for (XxlJobGroup group: groupList) {

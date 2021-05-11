@@ -24,6 +24,7 @@ import java.util.Map;
  * @author xuxueli 2018-11-01 09:24:52
  */
 public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationContextAware, SmartInitializingSingleton, DisposableBean {
+
     private static final Logger logger = LoggerFactory.getLogger(XxlJobSpringExecutor.class);
 
 

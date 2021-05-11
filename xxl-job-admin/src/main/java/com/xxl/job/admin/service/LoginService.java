@@ -1,5 +1,7 @@
 package com.xxl.job.admin.service;
 
+import com.jd.common.web.cookie.CookieUtils;
+import com.jd.ssa.utils.SSOHelper;
 import com.xxl.job.admin.core.model.XxlJobUser;
 import com.xxl.job.admin.core.util.CookieUtil;
 import com.xxl.job.admin.core.util.I18nUtil;
@@ -43,25 +45,7 @@ public class LoginService {
 
     public ReturnT<String> login(HttpServletRequest request, HttpServletResponse response, String username, String password, boolean ifRemember){
 
-        // param
-        if (username==null || username.trim().length()==0 || password==null || password.trim().length()==0){
-            return new ReturnT<String>(500, I18nUtil.getString("login_param_empty"));
-        }
 
-        // valid passowrd
-        XxlJobUser xxlJobUser = xxlJobUserDao.loadByUserName(username);
-        if (xxlJobUser == null) {
-            return new ReturnT<String>(500, I18nUtil.getString("login_param_unvalid"));
-        }
-        String passwordMd5 = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!passwordMd5.equals(xxlJobUser.getPassword())) {
-            return new ReturnT<String>(500, I18nUtil.getString("login_param_unvalid"));
-        }
-
-        String loginToken = makeToken(xxlJobUser);
-
-        // do login
-        CookieUtil.set(response, LOGIN_IDENTITY_KEY, loginToken, ifRemember);
         return ReturnT.SUCCESS;
     }
 
@@ -72,7 +56,10 @@ public class LoginService {
      * @param response
      */
     public ReturnT<String> logout(HttpServletRequest request, HttpServletResponse response){
-        CookieUtil.remove(request, response, LOGIN_IDENTITY_KEY);
+        CookieUtil.remove(request, response, "sso.jd.com");
+        CookieUtils cookieUtils = new CookieUtils();
+        cookieUtils.deleteCookie(response, "sso.jd.com");
+        SSOHelper.logout(response, "sso.jd.com");
         return ReturnT.SUCCESS;
     }
 
@@ -91,14 +78,7 @@ public class LoginService {
             } catch (Exception e) {
                 logout(request, response);
             }
-            if (cookieUser != null) {
-                XxlJobUser dbUser = xxlJobUserDao.loadByUserName(cookieUser.getUsername());
-                if (dbUser != null) {
-                    if (cookieUser.getPassword().equals(dbUser.getPassword())) {
-                        return dbUser;
-                    }
-                }
-            }
+
         }
         return null;
     }

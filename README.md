@@ -1,6 +1,6 @@
 <p align="center" >
     <img src="https://www.xuxueli.com/doc/static/xxl-job/images/xxl-logo.jpg" width="150">
-    <h3 align="center">XXL-JOB</h3>
+    <h3 align="center">omni-schedule</h3>
     <p align="center">
         XXL-JOB, a distributed task scheduling framework.
         <br>
@@ -33,7 +33,7 @@
 
 
 ## Introduction
-XXL-JOB is a distributed task scheduling framework. 
+omni-schedule is a distributed task scheduling framework. 
 It's core design goal is to develop quickly and learn simple, lightweight, and easy to expand. 
 Now, it's already open source, and many companies use it in production environments, real "out-of-the-box".
 

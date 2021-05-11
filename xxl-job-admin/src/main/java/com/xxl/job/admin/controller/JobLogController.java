@@ -1,5 +1,7 @@
 package com.xxl.job.admin.controller;
 
+import com.jd.common.web.LoginContext;
+import com.xxl.job.admin.constants.StaticDataInfo;
 import com.xxl.job.admin.core.exception.XxlJobException;
 import com.xxl.job.admin.core.complete.XxlJobCompleter;
 import com.xxl.job.admin.core.model.XxlJobGroup;
@@ -51,13 +53,19 @@ public class JobLogController {
 	public String index(HttpServletRequest request, Model model, @RequestParam(required = false, defaultValue = "0") Integer jobId) {
 
 		// 执行器列表
-		List<XxlJobGroup> jobGroupList_all =  xxlJobGroupDao.findAll();
+		List<XxlJobGroup> jobGroupList_all =  null;
+        if (StaticDataInfo.ADMIN_PIN.equalsIgnoreCase(LoginContext.getLoginContext().getPin())) {
+            jobGroupList_all = xxlJobGroupDao.findAllJobGroup();
+        } else {
+            jobGroupList_all = xxlJobGroupDao.findAll(LoginContext.getLoginContext().getPin());
+        }
+
 
 		// filter group
 		List<XxlJobGroup> jobGroupList = JobInfoController.filterJobGroupByRole(request, jobGroupList_all);
-		if (jobGroupList==null || jobGroupList.size()==0) {
+/*		if (jobGroupList==null || jobGroupList.size()==0) {
 			throw new XxlJobException(I18nUtil.getString("jobgroup_empty"));
-		}
+		}*/
 
 		model.addAttribute("JobGroupList", jobGroupList);
 
@@ -106,9 +114,15 @@ public class JobLogController {
 		}
 		
 		// page query
-		List<XxlJobLog> list = xxlJobLogDao.pageList(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
-		int list_count = xxlJobLogDao.pageListCount(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
-		
+        List<XxlJobLog> list = null;
+        int list_count = 0;
+        if (StaticDataInfo.ADMIN_PIN.equalsIgnoreCase(LoginContext.getLoginContext().getPin())) {
+            list = xxlJobLogDao.pageListAll(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
+            list_count = xxlJobLogDao.pageListCountAll(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
+        } else {
+            list = xxlJobLogDao.pageList(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus, LoginContext.getLoginContext().getPin());
+            list_count = xxlJobLogDao.pageListCount(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus, LoginContext.getLoginContext().getPin());
+        }
 		// package result
 		Map<String, Object> maps = new HashMap<String, Object>();
 	    maps.put("recordsTotal", list_count);		// 总记录数

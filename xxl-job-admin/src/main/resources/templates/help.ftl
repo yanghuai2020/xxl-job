@@ -14,11 +14,6 @@
 	
 	<!-- Content Wrapper. Contains page content -->
 	<div class="content-wrapper">
-		<!-- Content Header (Page header) -->
-		<section class="content-header">
-			<h1>${I18n.job_help}</h1>
-		</section>
-
 		<!-- Main content -->
 		<section class="content">
 			<div class="callout callout-info">

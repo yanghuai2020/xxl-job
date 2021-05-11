@@ -12,7 +12,9 @@ import java.util.List;
 @Mapper
 public interface XxlJobGroupDao {
 
-    public List<XxlJobGroup> findAll();
+    public List<XxlJobGroup> findAll(@Param("pin") String pin);
+
+    public List<XxlJobGroup> findAllJobGroup();
 
     public List<XxlJobGroup> findByAddressType(@Param("addressType") int addressType);
 
@@ -27,9 +29,22 @@ public interface XxlJobGroupDao {
     public List<XxlJobGroup> pageList(@Param("offset") int offset,
                                       @Param("pagesize") int pagesize,
                                       @Param("appname") String appname,
+                                      @Param("title") String title,
+                                      @Param("pin") String pin);
+
+    public List<XxlJobGroup> pageListAll(@Param("offset") int offset,
+                                      @Param("pagesize") int pagesize,
+                                      @Param("appname") String appname,
                                       @Param("title") String title);
 
     public int pageListCount(@Param("offset") int offset,
+                             @Param("pagesize") int pagesize,
+                             @Param("appname") String appname,
+                             @Param("title") String title,
+                             @Param("pin") String pin);
+
+
+    public int pageListCountAll(@Param("offset") int offset,
                              @Param("pagesize") int pagesize,
                              @Param("appname") String appname,
                              @Param("title") String title);
