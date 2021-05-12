@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.omni.job.admin.dao.OmniJobUserDao">
+
+	<resultMap id="XxlJobUser" type="com.omni.job.admin.core.model.OmniJobUser" >
+		<result column="id" property="id" />
+		<result column="job_group_id" property="jobGroupId" />
+	    <result column="pin" property="pin" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		t.id,
+		t.job_group_id,
+		t.pin
+	</sql>
+
+	<select id="listUserPin" parameterType="java.util.HashMap" resultMap="XxlJobUser">
+		SELECT <include refid="Base_Column_List" />
+		FROM omni_job_group_pin AS t
+        where t.job_group_id = #{jobGroupId}
+	</select>
+
+	<insert id="save" parameterType="com.omni.job.admin.core.model.OmniJobUser" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO omni_job_group_pin (
+            job_group_id,
+            pin
+		) VALUES (
+			#{jobGroupId},
+			#{pin}
+		);
+	</insert>
+
+	<delete id="delete" parameterType="java.util.HashMap">
+		DELETE
+		FROM omni_job_group_pin t
+		WHERE t.job_group_id = #{jobGroupId} and t.pin=#{pin}
+	</delete>
+
+    <delete id="deleteByGroupId">
+        DELETE
+        FROM omni_job_group_pin t
+        WHERE t.job_group_id = #{groupId}
+    </delete>
+
+</mapper>
