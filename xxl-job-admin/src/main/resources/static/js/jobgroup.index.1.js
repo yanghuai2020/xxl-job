@@ -28,12 +28,12 @@ $(function() {
 			{
 				"data": 'appname',
 				"visible" : true,
-				"width":'30%'
+				"width":'25%'
 			},
 			{
 				"data": 'title',
 				"visible" : true,
-				"width":'30%'
+				"width":'25%'
 			},
 			{
 				"data": 'addressType',
@@ -58,9 +58,21 @@ $(function() {
 						:I18n.system_empty;
 				}
 			},
+            {
+                "data": 'listErpPin',
+                "width":'10%',
+                "text-align":'center',
+                "visible" : true,
+                "render": function ( data, type, row ) {
+                    return row.listErpPin
+                        ?'<a class="show_listErpPin" href="javascript:;" _id="'+ row.id +'" >'
+                        + I18n.system_show +' ( ' + row.listErpPin.length+ ' ）</a>'
+                        :I18n.system_empty;
+                }
+            },
 			{
 				"data": I18n.system_opt ,
-				"width":'15%',
+				"width":'30%',
 				"render": function ( data, type, row ) {
 					return function(){
 						// data
@@ -141,6 +153,70 @@ $(function() {
 	});
 
 
+	function aaa() {
+	    alert(2);
+    }
+
+    // job registryinfo
+    $("#jobgroup_list").on('click', '.show_listErpPin',function() {
+        var id = $(this).attr("_id");
+        var row = tableData['key'+id];
+
+        var html = '<div id="deleteUserPin">';
+        if (row.listErpPin) {
+            for (var index in row.listErpPin) {
+                html += '<span class="" >' + row.listErpPin[index] + '<a index="'+index+'" id="'+id+'" pin="'+row.listErpPin[index]+'" class="deleteUser" style="padding-left: 30px" href="#" >删除</a></span> <br>';
+            }
+        }
+
+        html += '</div>';
+
+        layer.open({
+            title: "授权用户",
+            btn: [ I18n.system_ok ],
+            area: ['500px','380px'],
+            content: html
+        });
+
+        //onclick="deleteUserPin('+id+', '+row.listErpPin[index]+')"
+       $("#deleteUserPin").on('click', '.deleteUser',function() {
+           var id = $(this).attr("id");
+           var pin = $(this).attr("pin");
+           var index = $(this).attr("index");
+           row.listErpPin[index] = '';
+
+           layer.confirm( ("确定删除授权用户吗?" + '？') , {
+               icon: 3,
+               title: "确认" ,
+               btn: [ I18n.system_ok, I18n.system_cancel ]
+           }, function(index){
+               layer.close(index);
+               $.ajax({
+                   type: 'POST',
+                   url: base_url+"/user/remove" ,
+                   data:{
+                       "jobGroupId":id,
+                       "pin":pin
+                   },
+                   cache:false,
+                   dataType:'json',
+                   success: function (){
+                       window.location.reload();
+                   } ,
+                   dataType: "json"
+               });
+               //$(this).parent().remove();
+           }, function (index) {
+               window.location.reload();
+           });
+
+        });
+
+    });
+
+
+
+
 	// opt_del
 	$("#jobgroup_list").on('click', '.opt_del',function() {
 		var id = $(this).parents('ul').attr("_id");
@@ -182,45 +258,7 @@ $(function() {
 	});
 
 
-    // opt_del
-    $("#jobgroup_list").on('click', '.opt_addUserPin',function() {
-        var id = $(this).parents('ul').attr("_id");
 
-        layer.confirm( (I18n.system_ok + I18n.jobgroup_del + '？') , {
-            icon: 3,
-            title: I18n.system_tips+"ddd" ,
-            btn: [ I18n.system_ok, I18n.system_cancel ]
-        }, function(index){
-            layer.close(index);
-
-            $.ajax({
-                type : 'POST',
-                url : base_url + '/user/add',
-                data : {"id":id},
-                dataType : "json",
-                success : function(data){
-                    if (data.code == 200) {
-                        layer.open({
-                            title: I18n.system_tips ,
-                            btn: [ I18n.system_ok ],
-                            content: (I18n.jobgroup_del + I18n.system_success),
-                            icon: '1',
-                            end: function(layero, index){
-                                jobGroupTable.fnDraw();
-                            }
-                        });
-                    } else {
-                        layer.open({
-                            title: I18n.system_tips,
-                            btn: [ I18n.system_ok ],
-                            content: (data.msg || (I18n.jobgroup_del + I18n.system_fail)),
-                            icon: '2'
-                        });
-                    }
-                },
-            });
-        });
-    });
 
 
 	// jquery.validate “low letters start, limit contants、 letters、numbers and line-through.”
@@ -330,6 +368,18 @@ $(function() {
 
 		$('#updateModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
+
+    // opt_del
+    $("#jobgroup_list").on('click', '.opt_addUserPin',function() {
+        var id = $(this).parents('ul').attr("_id");
+
+        var id = $(this).parents('ul').attr("_id");
+        var row = tableData['key'+id];
+        $("#addUserPinModal .form input[name='jobGroupId']").val( row.id );
+        $('#addUserPinModal').modal({backdrop: false, keyboard: false}).modal('show');
+
+    });
+
 	var updateModalValidate = $("#updateModal .form").validate({
 		errorElement : 'span',
 		errorClass : 'help-block',
@@ -397,5 +447,71 @@ $(function() {
 		$("#updateModal .form .form-group").removeClass("has-error");
 	});
 
-	
+
+
+
+
+    var addUserPinValidate = $("#addUserPinModal .form").validate({
+        errorElement : 'span',
+        errorClass : 'help-block',
+        focusInvalid : true,
+        rules : {
+            pin : {
+                required : true,
+                rangelength:[2,128],
+                myValid01 : true
+            }
+        },
+        messages : {
+            pin : {
+                required : "erp pin必须正确填写",
+                rangelength: "erp pin必须填写" ,
+                myValid01: "erp pin必须正确填写"
+            }
+        },
+
+        highlight : function(element) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+
+        success : function(label) {
+            label.closest('.form-group').removeClass('has-error');
+            label.remove();
+        },
+        errorPlacement : function(error, element) {
+            element.parent('div').append(error);
+        },
+        submitHandler : function(form) {
+            $.post(base_url + "/user/add",  $("#addUserPinModal .form").serialize(), function(data, status) {
+                if (data.code == "200") {
+                    $('#addUserPinModal').modal('hide');
+                    layer.open({
+                        title: I18n.system_tips ,
+                        btn: [ I18n.system_ok ],
+                        content: I18n.system_add_suc ,
+                        icon: '1',
+                        end: function(layero, index){
+                            jobGroupTable.fnDraw();
+                        }
+                    });
+                } else {
+                    layer.open({
+                        title: I18n.system_tips,
+                        btn: [ I18n.system_ok ],
+                        content: (data.msg || I18n.system_add_fail  ),
+                        icon: '2'
+                    });
+                }
+            });
+        }
+    });
+
+
+    $("#addUserPinModal").on('hide.bs.modal', function () {
+        $("#addUserPinModal .form")[0].reset();
+        addUserPinValidate.resetForm();
+        $("#addUserPinModal .form .form-group").removeClass("has-error");
+    });
+
+
 });

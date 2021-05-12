@@ -4,13 +4,17 @@ import com.jd.common.web.LoginContext;
 import com.xxl.job.admin.constants.StaticDataInfo;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobRegistry;
+import com.xxl.job.admin.core.model.XxlJobUser;
 import com.xxl.job.admin.core.util.I18nUtil;
 import com.xxl.job.admin.dao.XxlJobGroupDao;
 import com.xxl.job.admin.dao.XxlJobInfoDao;
 import com.xxl.job.admin.dao.XxlJobRegistryDao;
+import com.xxl.job.admin.dao.XxlJobUserDao;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.enums.RegistryConfig;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * job group controller
@@ -34,6 +39,9 @@ public class JobGroupController {
 	public XxlJobGroupDao xxlJobGroupDao;
 	@Resource
 	private XxlJobRegistryDao xxlJobRegistryDao;
+
+    @Resource
+    private XxlJobUserDao xxlJobUserDao;
 
 	@RequestMapping
 	public String index(Model model) {
@@ -57,6 +65,16 @@ public class JobGroupController {
             list = xxlJobGroupDao.pageList(start, length, appname, title, LoginContext.getLoginContext().getPin());
             list_count = xxlJobGroupDao.pageListCount(start, length, appname, title, LoginContext.getLoginContext().getPin());
         }
+
+        if (!CollectionUtils.isEmpty(list)) {
+            list.forEach(ele -> {
+                List<XxlJobUser> userList = xxlJobUserDao.listUserPin(Long.valueOf(ele.getId()));
+                if (CollectionUtils.isNotEmpty(userList)) {
+                    ele.addErpPin(userList.stream().map(e -> e.getPin()).collect(Collectors.toList()));
+                }
+            });
+        }
+
 		// package result
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("recordsTotal", list_count);		// 总记录数
@@ -67,6 +85,7 @@ public class JobGroupController {
 
 	@RequestMapping("/save")
 	@ResponseBody
+    @Transactional(rollbackFor = Exception.class)
 	public ReturnT<String> save(XxlJobGroup xxlJobGroup){
 
 		// valid
@@ -105,6 +124,11 @@ public class JobGroupController {
 		xxlJobGroup.setUpdateTime(new Date());
 
 		int ret = xxlJobGroupDao.save(xxlJobGroup);
+        XxlJobUser xxlJobUser = new XxlJobUser();
+        xxlJobUser.setPin(LoginContext.getLoginContext().getPin());
+        xxlJobUser.setJobGroupId(Long.valueOf(xxlJobGroup.getId()));
+
+        xxlJobUserDao.save(xxlJobUser);
 		return (ret>0)?ReturnT.SUCCESS:ReturnT.FAIL;
 	}
 
@@ -178,6 +202,7 @@ public class JobGroupController {
 
 	@RequestMapping("/remove")
 	@ResponseBody
+    @Transactional(rollbackFor = Exception.class)
 	public ReturnT<String> remove(int id){
 
 		// valid
@@ -199,6 +224,8 @@ public class JobGroupController {
 		}
 
 		int ret = xxlJobGroupDao.remove(id);
+        xxlJobUserDao.deleteByGroupId(id);
+
 		return (ret>0)?ReturnT.SUCCESS:ReturnT.FAIL;
 	}
 

@@ -57,6 +57,7 @@
                                         <th name="title" >${I18n.jobgroup_field_title}</th>
                                         <th name="addressType" >${I18n.jobgroup_field_addressType}</th>
                                         <th name="registryList" >OnLine ${I18n.jobgroup_field_registryList}</th>
+                                        <th name="listErpPin" >授权用户</th>
                                         <th>${I18n.system_opt}</th>
 					                </tr>
 				                </thead>
@@ -158,6 +159,35 @@
             </div>
         </div>
     </div>
+
+
+    <!-- 更新.模态框 -->
+    <div class="modal fade" id="addUserPinModal" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" >添加授权Pin</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal form" role="form" >
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-2 control-label">用户Pin<font color="red">*</font></label>
+                            <div class="col-sm-10"><input type="text" class="form-control" name="pin" placeholder="请填写erp" maxlength="64" ></div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 32px;">
+                            <div class="col-sm-offset-3 col-sm-6">
+                                <button type="submit" class="btn btn-primary"  >${I18n.system_save}</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">${I18n.system_cancel}</button>
+                                <input type="hidden" name="jobGroupId" >
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	
 	<!-- footer -->
 	<@netCommon.commonFooter />

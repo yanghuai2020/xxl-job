@@ -17,6 +17,20 @@ public class XxlJobGroup {
     private String addressList;     // 执行器地址列表，多地址逗号分隔(手动录入)
     private Date updateTime;
 
+    private List<String> listErpPin = new ArrayList<>();
+
+    public void addErpPin(List<String> listErpPin) {
+        this.listErpPin.addAll(listErpPin);
+    }
+
+    public List<String> getListErpPin() {
+        return listErpPin;
+    }
+
+    public void setListErpPin(List<String> listErpPin) {
+        this.listErpPin = listErpPin;
+    }
+
     // registry list
     private List<String> registryList;  // 执行器地址列表(系统注册)
     public List<String> getRegistryList() {

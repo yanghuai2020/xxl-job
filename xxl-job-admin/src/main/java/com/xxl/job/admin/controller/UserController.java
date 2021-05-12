@@ -33,6 +33,7 @@ public class UserController {
 
     @Resource
     private XxlJobUserDao xxlJobUserDao;
+
     @Resource
     private XxlJobGroupDao xxlJobGroupDao;
 
@@ -69,8 +70,8 @@ public class UserController {
 
     @RequestMapping("/add")
     @ResponseBody
-    @PermissionLimit(adminuser = true)
     public ReturnT<String> add(XxlJobUser xxlJobUser) {
+        xxlJobUser.setPin(xxlJobUser.getPin());
         xxlJobUserDao.save(xxlJobUser);
         return ReturnT.SUCCESS;
     }

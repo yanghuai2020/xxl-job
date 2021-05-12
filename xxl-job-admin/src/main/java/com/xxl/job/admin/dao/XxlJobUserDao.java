@@ -17,4 +17,6 @@ public interface XxlJobUserDao {
 
 	public int delete(XxlJobUser xxlJobUser);
 
+	public int deleteByGroupId(@Param("groupId") int groupId);
+
 }

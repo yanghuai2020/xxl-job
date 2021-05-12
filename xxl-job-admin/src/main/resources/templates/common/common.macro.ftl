@@ -139,7 +139,6 @@
 				<li class="nav-click <#if pageName == "joblog">active</#if>" ><a href="${request.contextPath}/joblog"><i class="fa fa-circle-o text-green"></i><span>${I18n.joblog_name}</span></a></li>
 				<#if Request["XXL_JOB_LOGIN_IDENTITY"].role == 1>
                     <li class="nav-click <#if pageName == "jobgroup">active</#if>" ><a href="${request.contextPath}/jobgroup"><i class="fa fa-circle-o text-red"></i><span>${I18n.jobgroup_name}</span></a></li>
-                    <li class="nav-click <#if pageName == "user">active</#if>" ><a href="${request.contextPath}/user"><i class="fa fa-circle-o text-purple"></i><span>${I18n.user_manage}</span></a></li>
 				</#if>
 			</ul>
 		</section>
@@ -226,7 +225,7 @@
 
 <#macro commonFooter >
 	<footer class="main-footer">
-        Powered by <b>omni-schedule</b> ${I18n.admin_version}
+        Powered by <b>京东全渠道任务调度系统</b> ${I18n.admin_version}
 		<div class="pull-right hidden-xs">
             <strong>
 
