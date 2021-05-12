@@ -28,7 +28,7 @@
             <mvc:exclude-mapping path="/omni-job/api/**" />
 
             <!-- 单点登录springmvc 拦截器bean -->
-            <bean id="dpManagerInterceptor" class="com.xxl.job.admin.controller.interceptor.SsoOmniInterceptor">
+            <bean id="dpManagerInterceptor" class="com.omni.job.admin.controller.interceptor.SsoOmniInterceptor">
             </bean>
         </mvc:interceptor>
     </mvc:interceptors>
